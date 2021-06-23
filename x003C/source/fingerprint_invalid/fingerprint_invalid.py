@@ -2,7 +2,7 @@ import locale
 import time
 
 import curses
-
+import random
 import os
 from threading import Thread   
 ###################################################
@@ -118,8 +118,19 @@ class Wave(MoveAbleObject):
 ###################################################
 class Water:
 
-    def __init__(self):
-        pass
+    def __init__(self, X, Y):
+        self.width = X
+        self.height = Y
+        self.waterSegments = []
+        self.waterSegments.append(parseTxtToDrawableObject('_=_=-='))
+        self.waterSegments.append(parseTxtToDrawableObject('_=_=-='))
+        self.waterSegments.append(parseTxtToDrawableObject('==-'))
+        self.waterSegments.append(parseTxtToDrawableObject('=-'))
+        self.waterSegments.append(parseTxtToDrawableObject('-=.--'))
+        self.waterSegments.append(parseTxtToDrawableObject('_=-=-'))
+        self.waterSegments.append(parseTxtToDrawableObject('-_=-=_'))
+        self.waterSegments.append(parseTxtToDrawableObject('=-=-_-__=_-='))
+        self.waterSegments.append(parseTxtToDrawableObject('_=_=-=_'))
 
     def get(self):
         return self.Background()
@@ -127,10 +138,12 @@ class Water:
     def Background(self):
         c = ' '
         background = []
+        line = ""
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_CYAN)
-        for y in range(curses.LINES -2):
-            for x in range(curses.COLS -2):
-                background.append(GraphicsPoint(x, y, c, curses.color_pair(1)))
+        for y in range(self.height):
+            for X in range(self.width):
+                
+
         return background
 
    
