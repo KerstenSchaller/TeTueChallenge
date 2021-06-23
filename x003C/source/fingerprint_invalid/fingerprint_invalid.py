@@ -25,17 +25,25 @@ def detect_key_press():
     endCurses()
 
 def parseTxtToDrawableObject(parseString, Color):
-    x = 0
-    y = -1
+    x = -1
+    y = 0
     points = []
-    for c in parseString:
+    for i in range( len(parseString)):
+        c = parseString[i]
+        x = x + 1
         if c != " " and c != "\n":
-            points.append(GraphicsPoint(x, y, c , Color ))
-            x = x + 1
-        else: 
-            if c == "\n":
-                x = 0
-                y = y + 1
+            if (c == "n") & (parseString[i-1] == '\\'):
+                x = -1
+                y = y + 1 
+            else:
+                if (c == "\\") & (parseString[i+1] == 'n'):
+                    continue
+                else:
+                    points.append(GraphicsPoint(x, y, c , Color ))
+
+
+            
+
     return points
 
 ###################################################
@@ -94,11 +102,18 @@ class cloud(MoveAbleObject):
     def __init__(self, Direction, Y): 
         super().__init__(Direction, Y)
         curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_CYAN)
-        cloudString = """
-            ,((_'-. _
-        _(   (_ ) ),--.
-        (  (  __   _)  )-._
-        """
+        cloudString = (
+r"             xx     \n"
+r"             / .|_  \n"
+r"            /(_)_<  \n"
+r"           /  (     \n"
+r"  ((____.-'    )    \n"
+r"   \\          /    \n"
+r"    \\'-.-.-'`/     \n"
+r"     \\______/      \n"
+r"       _|_\\_         "
+)
+
         self.points = parseTxtToDrawableObject(cloudString, curses.color_pair(2)) 
 
 
@@ -108,7 +123,15 @@ class Wave(MoveAbleObject):
 
     def __init__(self, Direction, Y):
         super().__init__(Direction, Y)
-        waveString = u'hello わたし'
+        waveString = (
+r'\__   __/(  ____ \ __   __/|\     /|(  ____ \    (  ____ \|\     /|(  ___  )( \      ( \      (  ____ \( (    /|(  ____ \(  ____ \ \n'
+r'   ) (   | (    \/   ) (   | )   ( || (    \/    | (    \/| )   ( || (   ) || (      | (      | (    \/|  \  ( || (    \/| (    \/ \n'
+r'   | |   | (__       | |   | |   | || (__        | |      | (___) || (___) || |      | |      | (__    |   \ | || |      | (__     \n'
+r'   | |   |  __)      | |   | |   | ||  __)       | |      |  ___  ||  ___  || |      | |      |  __)   | (\ \) || | ____ |  __)    \n'
+r'   | |   | (         | |   | |   | || (          | |      | (   ) || (   ) || |      | |      | (      | | \   || | \_  )| (       \n'
+r'   | |   | (____/\   | |   | (___) || (____/\    | (____/\| )   ( || )   ( || (____/\| (____/\| (____/\| )  \  || (___) || (____/\ \n'
+r'   )_(   (_______/   )_(   (_______)(_______/    (_______/|/     \||/     \|(_______/(_______/(_______/|/    )_)(_______)(_______/ '
+)
         self.points = parseTxtToDrawableObject(waveString, curses.color_pair(1)) 
 
 
@@ -167,7 +190,9 @@ class Game:
         self.screen = Screen()
         self.water = Water()
         self.wave = Wave("left", 3)
-        self.cloud = cloud("left", 7)
+        self.wave.x_offset = curses.COLS + 20
+        self.cloud = cloud("left", 3)
+        self.cloud.x_offset = curses.COLS + 2
         self.screen.addDrawable(self.water)
         self.screen.addDrawable(self.cloud)
         self.screen.addDrawable(self.wave)
@@ -178,10 +203,11 @@ class Game:
         self.graphicsLoop()
     
     def logicLoop(self):
-        if self.cloud.x_offset == -10:
-            del self.cloud
-            self.cloud = cloud("left", 5)
-            self.screen.addDrawable(self.cloud)
+        pass
+        #if self.cloud.x_offset == -10:
+            #del self.cloud
+            #self.cloud = cloud("left", 5)
+            #self.screen.addDrawable(self.cloud)
 
     def graphicsLoop(self):
         self.screen.draw()
