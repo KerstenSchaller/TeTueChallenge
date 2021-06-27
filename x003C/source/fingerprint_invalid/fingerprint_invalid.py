@@ -7,6 +7,7 @@ from enum import Enum
 import os
 from threading import Thread  
 from curses import wrapper as cursesWrapper
+import threading
 ###################################################
 
 
@@ -373,6 +374,7 @@ class Game:
     def __init__(self):
         self.updateIntervall = 0.25
         self.cnt = 0
+        self.stopThread = False
 
         curses.initscr()  
         curses.start_color()
@@ -405,10 +407,18 @@ class Game:
 
 
 
+    def _gameLoop(self):
+        while True:
+            time.sleep(self.updateIntervall)
+            self.logicLoop()
+            self.graphicsLoop()
+            if self.stopThread == True:
+                break
+
     def gameLoop(self):
-        time.sleep(self.updateIntervall)
-        self.logicLoop()
-        self.graphicsLoop()
+        threading.Thread(target=self._gameLoop).start()
+
+
    
     def logicLoop(self):
         self.cloudLogic()
@@ -429,19 +439,24 @@ class Game:
     def graphicsLoop(self):
         Screen.draw()
 
+  
+
+  
 def Main(scr):
 
-
-
     game = Game()
+    game.gameLoop()
 
-    while True:
-        try:
-            game.gameLoop()
-           
-        except:
-            endCurses()
-            sys.exit(0)
+
+
+    #while True:
+        #c = scr.getch()
+    c = scr.getkey()
+    if c == curses.KEY_ENTER: 
+        game.stopThread = True
+        endCurses()
+        sys.exit(0)
+        
 
 
 if __name__ == "__main__":
